@@ -3,7 +3,7 @@ from sklearn.base import BaseEstimator
 
 class Regressor(BaseEstimator ):
     def __init__(self):
-        self.clf = GradientBoostingRegressor( n_estimators = 2000 , max_depth = 9 , max_features = 8 , verbose = 1)
+        self.clf = GradientBoostingRegressor( n_estimators = 1500 , max_depth = 6 , max_features = 20 , verbose = 1)
         print("N. estimators:\t%i" % (self.clf.n_estimators) )
         print("Max features:\t%i" %  (self.clf.max_features) )
         print("Max features:\t%i" % (self.clf.max_depth) ) 
