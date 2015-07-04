@@ -17,9 +17,9 @@ class FeatureExtractor(object):
         weather = pd.read_csv( os.path.join( path , "weather_data.csv" ) )
         #weather = pd.read_csv('weather_data.csv',parse_dates=['Date'])
         weather.fillna(0,inplace=True)
-        weather = weather.join(pd.get_dummies(weather[u' Events'], prefix='event_'))
+        weather = weather.join(pd.get_dummies(weather[u'Events'], prefix='event_'))
         
-        weather.drop(['Precipitationmm',u' Events'],axis=1,inplace=True)
+        weather.drop(['Precipitationmm',u'Events'],axis=1,inplace=True)
         weather.rename(columns = {'Date':'DateOfDeparture',u'AirPort':'Arrival'},inplace=True)
         
         data_encoded = pd.merge( data_encoded, weather , on=['Arrival','DateOfDeparture'],how='left')
