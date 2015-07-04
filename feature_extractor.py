@@ -10,7 +10,7 @@ class FeatureExtractor(object):
         pass
 
     def transform(self, data_encoded):
-        
+        ## 
         data_encoded['DateOfDeparture'] = pd.to_datetime(data_encoded['DateOfDeparture'])
         
         path = os.path.dirname(__file__)
