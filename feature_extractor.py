@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os
 
 class FeatureExtractor(object):
     def __init__(self):
@@ -9,14 +10,27 @@ class FeatureExtractor(object):
         pass
 
     def transform(self, data_encoded):
-         
+        
+        data_encoded['DateOfDeparture'] = pd.to_datetime(data_encoded['DateOfDeparture'])
+        
+        #path = os.path.dirname(__file__)
+        #weather = pd.read_csv( os.path.join( path , "weather_data.csv" ) )
+        weather = pd.read_csv('/mnt/datacamp/14_15DataCamp/DataLake/weather_data.txt',parse_dates=['Date'])
+        weather = weather.join(pd.get_dummies(weather[u' Events'], prefix='event_'))
+        weather.fillna(0,inplace=True)
+        weather.drop(['Precipitationmm',u' Events'],axis=1,inplace=True)
+        weather.rename(columns = {'Date':'DateOfDeparture',u'AirPort':'Arrival'},inplace=True)
+        
+        data_encoded = pd.merge( data_encoded, weather , on=['Arrival','DateOfDeparture'],how='left')
+        
+        
         data_encoded = data_encoded.join(pd.get_dummies(data_encoded['Departure'], prefix='d'))
         data_encoded = data_encoded.join(pd.get_dummies(data_encoded['Arrival'], prefix='a'))
         data_encoded = data_encoded.drop('Departure', axis=1)
         data_encoded = data_encoded.drop('Arrival', axis=1)
 
         
-        data_encoded['DateOfDeparture'] = pd.to_datetime(data_encoded['DateOfDeparture'])
+        
         data_encoded['year'] = data_encoded['DateOfDeparture'].dt.year
         data_encoded['month'] = data_encoded['DateOfDeparture'].dt.month
         data_encoded['day'] = data_encoded['DateOfDeparture'].dt.day
@@ -31,14 +45,6 @@ class FeatureExtractor(object):
         data_encoded = data_encoded.join(pd.get_dummies(data_encoded['week'], prefix='w'))
         
         data_encoded = data_encoded.drop(['DateOfDeparture'], axis=1)
-        
-        keep_cols = ['weekday', 'wd_5', 'WeeksToDeparture', 'n_days', 'week', 'd_ORD', 'a_LGA', 
-                     'a_ORD', 'a_JFK', 'd_JFK', 'a_LAX', 'd_LGA', 'd_ATL', 'd_LAX', 'day', 'w_47', 
-                     'd_SFO', 'a_DFW', 'a_ATL', 'd_MIA', 'a_LAS', 'd_LAS', 'd_DTW', 'std_wtd', 
-                     'a_SFO', 'a_BOS', 'a_IAH', 'a_PHX', 'a_DTW', 'w_27', 'd_DFW', 'd_IAH', 
-                     'a_MCO', 'd_PHX', 'd_BOS', 'wd_1', 'd_CLT', 'a_MIA', 'a_EWR', 'd_SEA', 'a_SEA', 'wd_3', 'a_DEN',
-                     'd_EWR', 'd_DEN', 'a_CLT', 'wd_6', 'w_1', 'month', 'w_44', 'w_35', 'd_MCO', 'w_52', 'd_PHL']
-        data_encoded = data_encoded[keep_cols]
         
         X_array = np.array(data_encoded)
         print("\nX train shape:\t(%i,%i)\n" % (X_array.shape[0],X_array.shape[1]))
